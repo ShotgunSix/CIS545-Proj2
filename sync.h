@@ -8,7 +8,14 @@
 #define _STHREAD_SYNC_H_
 
 struct sthread_rwlock_struct {   
-        
+
+        int num_reader;
+        int writer_active;
+        struct waiter *writer_head;
+        struct waiter *writer_tail;
+        struct waiter *reader_head;
+        struct waiter *reader_tail;
+
         /* FILL ME IN! */
 };
 
