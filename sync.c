@@ -42,14 +42,42 @@ static inline void clear_bit(volatile unsigned long *addr)
 			: "memory"	/* clobbered: changing contents of memory */
 			);
 }
+// function to ensure smooth queuing
+void enqueue(struct waiter **head, struct waiter **tail, struct waiter *w){
+		
+	w->next = NULL;			//makes sure theres no chain attached to the end of the new link
+	if (*head == NULL){		// check to see if queue is empty
+		*head = w;			// set new linked head to w
+		*tail = w;			// set new linked tail to w
+	} else {				// if queue is already populated
+		(*tail)->next = w;	// point from last link tail to new link
+		*tail = w;			// set new link as the tail in the queue
+	}
+}
 
+void dequeue(struct waiter **head, struct waiter **tail){
+		
+	struct waiter *w
+
+	if (*head == NULL){		// if queue is empty, back out immediately
+		return NULL;	
+	} 
+
+	w = *head; 			// save front of line waiter to return value later on
+	*head = w->next;	// move the head forward one spot to be next in line
+
+	if (*head == NULL){		// second conditional to make sure tail value is correct if queue is empty
+		*tail = NULL;  		// if head is NULL, tail must also be set to NULL
+	}
+	return w;
+}
 /*
  * rwlock routines
  */
 
 int sthread_rwlock_init(sthread_rwlock_t *rwlock)
 {
-	// initialize fields to a default state
+	// initialize fields to a default value
     rwlock->num_reader = 0;
 	rwlock->writer_active = 0;
 	rwlock->writer_head = NULL;
