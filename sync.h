@@ -7,6 +7,11 @@
 #ifndef _STHREAD_SYNC_H_
 #define _STHREAD_SYNC_H_
 
+struct waiter {
+        sthread_t thread;                 // handle for waiting thread
+        struct waiter *next;             // pointer to next link in queue
+};
+
 struct sthread_rwlock_struct {   
 
         int num_reader;
