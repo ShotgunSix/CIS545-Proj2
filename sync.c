@@ -49,13 +49,27 @@ static inline void clear_bit(volatile unsigned long *addr)
 
 int sthread_rwlock_init(sthread_rwlock_t *rwlock)
 {
-        /* FILL ME IN! */
+	// initialize fields to a default state
+    rwlock->num_reader = 0;
+	rwlock->writer_active = 0;
+	rwlock->writer_head = NULL;
+	rwlock->writer_tail = NULL;
+	rwlock->reader_head = NULL;
+	rwlock->reader_tail = NULL;
+	
+	/* FILL ME IN! */
         return 0;
 }
 
+// assumed lock is done being used when called
 int sthread_rwlock_destroy(sthread_rwlock_t *rwlock)
-{
-        /* FILL ME IN! */
+{		
+		// reset reader count back to zero
+		rwlock->num_reader = 0;
+		// reset writer count back to zero
+		rwlock->writer_active = 0;
+	
+		/* FILL ME IN! */
         return 0;
 }
 
