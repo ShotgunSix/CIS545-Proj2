@@ -14,7 +14,7 @@ struct waiter {
 
 struct sthread_rwlock_struct {   
 
-        volatile unsigned_long guard;
+        volatile unsigned long guard;
         int num_reader;
         int writer_active;
         struct waiter *writer_head;
