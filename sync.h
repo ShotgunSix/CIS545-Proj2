@@ -1,5 +1,6 @@
 /*
- * NAME, etc.
+ * Steven Vetrano
+ * CSU ID: 2766483
  *
  * sync.h
  */
@@ -7,22 +8,21 @@
 #ifndef _STHREAD_SYNC_H_
 #define _STHREAD_SYNC_H_
 
+// waiter struct for linked list handling
 struct waiter {
-        sthread_t thread;                 // handle for waiting thread
-        struct waiter *next;             // pointer to next link in queue
+        sthread_t thread;
+        struct waiter *next;
 };
 
 struct sthread_rwlock_struct {   
-
-        volatile unsigned long guard;
-        int num_reader;
-        int writer_active;
-        struct waiter *writer_head;
-        struct waiter *writer_tail;
-        struct waiter *reader_head;
+         
+        volatile unsigned long guard;                  //spinlock bit
+        int num_reader;                                 // counter for number of readers
+        int writer_active;                              // boolean int to track if there is an active writer in critical regions
+        struct waiter *writer_head;                     // writer linked list queue
+        struct waiter *writer_tail;                     
+        struct waiter *reader_head;                     // reader linked list queue
         struct waiter *reader_tail;
-
-        /* FILL ME IN! */
 };
 
 typedef struct sthread_rwlock_struct sthread_rwlock_t;
