@@ -28,8 +28,8 @@ int slowreader(void *arg) {
   sthread_read_lock(&mylock);
   printf("thread%d ===> This reader thread is very slow\n", threadno);
   sleep(10);
-  sthread_read_unlock(&mylock);
   printf("thread%d ===> I am finally done! #############\n", threadno);
+  sthread_read_unlock(&mylock);
   return 0;
 }
 
@@ -57,9 +57,9 @@ int deposit(void *arg) {
     tmp = balance;
     tmp = tmp + 1;
     balance = tmp;
-    sthread_write_unlock(&mylock);
     printf("thread%d ===> Deposit thread iteration %d\n", threadno, i);
     fflush(stdout);
+    sthread_write_unlock(&mylock);
   }
   return 0;
 }
@@ -70,16 +70,16 @@ int withdraw(void *arg) {
   for (i=0; i<NUMLOOP; i++) {
     sthread_write_lock(&mylock);
     balance -= 1;
-    sthread_write_unlock(&mylock);
     printf("thread%d ===> Withdrawal thread iteration %d\n", threadno, i);
     fflush(stdout);
+    sthread_write_unlock(&mylock);
   }
   return 0;
 }
 
 int main(int argc, char *argv[])
 {
-  sthread_t thr1[NUMTHR], thr2[NUMTHR], thr3[NUMTHR], test_r1, test_r2, test_r3, test_r4, test_w1; 
+  sthread_t thr1[NUMTHR], thr2[NUMTHR], thr3[NUMTHR], thr4[NUMTHR]; 
   //sthread_t thr0;
   int i;
   balance = 10000;
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
     fprintf(stderr, "%s: sthread_init: %s\n", argv[0], strerror(errno));
 
 
-  /* for (i = 0; i<NUMTHR; i++) {
+  for (i = 0; i<NUMTHR; i++) {
     if (sthread_create(&thr3[i], bcheck, (void *)(NUMTHR+NUMTHR+i)) == -1)
       fprintf(stderr, "%s: sthread_create: %s\n", argv[0], strerror(errno));
 
@@ -100,32 +100,10 @@ int main(int argc, char *argv[])
 
     if (sthread_create(&thr2[i], withdraw, (void *)(NUMTHR+i)) == -1)
       fprintf(stderr, "%s: sthread_create: %s\n", argv[0], strerror(errno));
-  } */
-
-  if (sthread_create(&test_r1, slowreader, (void *)(50)) == -1)                     // reader thread to test multiple reader access
-    fprintf(stderr, "%s: sthread_create: %s\n", argv[0], strerror(errno));
-
-  sleep(1);
-
-  if (sthread_create(&test_r2, slowreader, (void *)(100)) == -1)                    // reader thread to test multiple reader access
-    fprintf(stderr, "%s: sthread_create: %s\n", argv[0], strerror(errno));
-
-  sleep(1);
-
-  if (sthread_create(&test_r3, slowreader, (void *)(200)) == -1)                    // reader thread to test writer priority access
-    fprintf(stderr, "%s: sthread_create: %s\n", argv[0], strerror(errno));
-
-  sleep(1);
   
-  if (sthread_create(&test_w1, deposit, (void *)(222)) == -1)                       // writer thread to test writer priority
-    fprintf(stderr, "%s: sthread_create: %s\n", argv[0], strerror(errno));
-
-  sleep(1);
-
-  if (sthread_create(&test_r4, bcheck, (void *)(300)) == -1)                        // reader thread to test writer priority access
-    fprintf(stderr, "%s: sthread_create: %s\n", argv[0], strerror(errno));
-
-  sleep(1);
+    if (sthread_create(&thr4[i], slowreader, (void *)(NUMTHR+NUMTHR+NUMTHR+i)) == -1)
+      fprintf(stderr, "%s: sthread_create: %s\n", argv[0], strerror(errno));    
+  }
 
   while (1) {
     //sleep(1);
