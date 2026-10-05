@@ -8,7 +8,7 @@
   * Contribution: 50%
 * Member 2:
   * Steven Vetrano
-  * CSU-ID:
+  * CSU-ID: 2766483
   * Contribution: 50% 
 
 ## `rwlock` data structure:
