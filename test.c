@@ -79,7 +79,7 @@ int withdraw(void *arg) {
 
 int main(int argc, char *argv[])
 {
-  sthread_t thr1[NUMTHR], thr2[NUMTHR], thr3[NUMTHR];
+  sthread_t thr1[NUMTHR], thr2[NUMTHR], thr3[NUMTHR], test_r1, test_r2, test_r3, test_r4, test_w1; 
   //sthread_t thr0;
   int i;
   balance = 10000;
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
     fprintf(stderr, "%s: sthread_init: %s\n", argv[0], strerror(errno));
 
 
-  for (i = 0; i<NUMTHR; i++) {
+  /* for (i = 0; i<NUMTHR; i++) {
     if (sthread_create(&thr3[i], bcheck, (void *)(NUMTHR+NUMTHR+i)) == -1)
       fprintf(stderr, "%s: sthread_create: %s\n", argv[0], strerror(errno));
 
@@ -100,7 +100,30 @@ int main(int argc, char *argv[])
 
     if (sthread_create(&thr2[i], withdraw, (void *)(NUMTHR+i)) == -1)
       fprintf(stderr, "%s: sthread_create: %s\n", argv[0], strerror(errno));
-  }
+  } */
+
+  if (sthread_create(&test_r1, slowreader, (void *)(50)) == -1)                     // reader thread to test multiple reader access
+    fprintf(stderr, "%s: sthread_create: %s\n", argv[0], strerror(errno));
+
+  sleep(1);
+
+  if (sthread_create(&test_r2, slowreader, (void *)(100)) == -1)                    // reader thread to test multiple reader access
+    fprintf(stderr, "%s: sthread_create: %s\n", argv[0], strerror(errno));
+
+  sleep(1);
+
+  if (sthread_create(&test_r3, slowreader, (void *)(200)) == -1)                    // reader thread to test writer priority access
+    fprintf(stderr, "%s: sthread_create: %s\n", argv[0], strerror(errno));
+
+  sleep(1);
+  
+  if (sthread_create(&test_w1, deposit, (void *)(222)) == -1)                       // writer thread to test writer priority
+    fprintf(stderr, "%s: sthread_create: %s\n", argv[0], strerror(errno));
+
+  sleep(1);
+
+  if (sthread_create(&test_r4, bcheck, (void *)(300)) == -1)                        // reader thread to test writer priority access
+    fprintf(stderr, "%s: sthread_create: %s\n", argv[0], strerror(errno));
 
   sleep(1);
 
@@ -110,10 +133,10 @@ int main(int argc, char *argv[])
     //sthread_wake(thr2);
     sleep(3);
     printf("the balnce is %d\n", balance);
-    if (destroyed == 0) {
-      sthread_rwlock_destroy(&mylock);
-      destroyed = 1;
-    }
+    //if (destroyed == 0) {
+    //  sthread_rwlock_destroy(&mylock);
+    //  destroyed = 1;
+    //}
   }
 
   return 0;
